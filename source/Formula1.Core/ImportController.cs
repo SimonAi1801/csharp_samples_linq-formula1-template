@@ -13,6 +13,9 @@ namespace Formula1.Core
     /// </summary>
     public static class ImportController
     {
+        public static List<Driver> Drivers { get; private set; }
+        public static List<Team> Teams { get; private set; }
+        public static List<Result> Results { get; private set; }
         /// <summary>
         /// Daten der Rennen werden aus der
         /// XML-Datei ausgelesen und in die Races-Collection gespeichert.
@@ -21,7 +24,29 @@ namespace Formula1.Core
         /// </summary>
         public static IEnumerable<Race> LoadRacesFromRacesXml()
         {
-            throw new NotImplementedException();
+            List<Race> races = new List<Race>();
+            string filePath = MyFile.GetFullNameInApplicationTree("Races.xml");
+            var xElement = XDocument.Load(filePath).Root;
+
+            if (xElement != null)
+            {
+                races = xElement.Elements("Race")
+                       .Select(race => new Race
+                       {
+                           Number = (int)race.Attribute("round"),
+                           Date = (DateTime)race.Element("Date"),
+                           Country = race.Element("Circuit")
+                                     ?.Element("Location")
+                                     ?.Element("Country")
+                                     ?.Value,
+                           City = race.Element("Circuit")
+                                  ?.Element("Location")
+                                  ?.Element("Locality")
+                                  ?.Value
+                       })
+                       .ToList();
+            }
+            return races;
         }
 
         /// <summary>
@@ -30,7 +55,23 @@ namespace Formula1.Core
         /// </summary>
         public static IEnumerable<Result> LoadResultsFromXmlIntoCollections()
         {
-            throw new NotImplementedException();
+            LoadRacesFromRacesXml();
+            Drivers = new List<Driver>();
+            Teams = new List<Team>();
+            Results = new List<Result>();
+            string filePath = MyFile.GetFullNameInApplicationTree("Results.xml");
+            var xElement = XDocument.Load(filePath).Root;
+
+            if (xElement != null)
+            {
+                Results = xElement.Elements("Race").Elements("ResultsList").Elements("Result")
+                           .Select(result => new Result
+                           {
+
+                           })
+                           .ToList();
+            }
+            return Results;
         }
 
 
