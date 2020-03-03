@@ -14,9 +14,9 @@ namespace Formula1.CoreTest
         public void R01_GetDriverWmTableTest()
         {
             var driverResults = ResultCalculator.GetDriverWmTable().ToArray();
-            Assert.AreEqual("Hamilton Lewis", driverResults[0].Competitor.Name);
+            Assert.AreEqual("Hamilton Lewis", driverResults[0].Competitor.DriverName);
             Assert.AreEqual(281, driverResults[0].Points);
-            Assert.AreEqual("Stroll Lance", driverResults[11].Competitor.Name);
+            Assert.AreEqual("Stroll Lance", driverResults[11].Competitor.DriverName);
             Assert.AreEqual(32, driverResults[11].Points);
         }
 
@@ -24,9 +24,9 @@ namespace Formula1.CoreTest
         public void R02_GetTeamWmTableTest()
         {
             var teamResults = ResultCalculator.GetTeamWmTable().ToArray();
-            Assert.AreEqual("Mercedes", teamResults[0].Competitor.Name);
+            Assert.AreEqual("Mercedes", teamResults[0].Competitor.DriverName);
             Assert.AreEqual(503, teamResults[0].Points);
-            Assert.AreEqual("Haas F1 Team", teamResults[7].Competitor.Name);
+            Assert.AreEqual("Haas F1 Team", teamResults[7].Competitor.DriverName);
             Assert.AreEqual(37, teamResults[7].Points);
         }
 

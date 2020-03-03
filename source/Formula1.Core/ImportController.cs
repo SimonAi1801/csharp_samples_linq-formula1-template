@@ -13,9 +13,10 @@ namespace Formula1.Core
     /// </summary>
     public static class ImportController
     {
-        public static List<Driver> Drivers { get; private set; }
-        public static List<Team> Teams { get; private set; }
-        public static List<Result> Results { get; private set; }
+        public static IDictionary<string, Driver> Drivers { get; private set; }
+        public static IDictionary<string, Team> Teams { get; private set; }
+        public static IEnumerable<Result> Results { get; private set; }
+        public static IEnumerable<Race> Races { get; private set; }
         /// <summary>
         /// Daten der Rennen werden aus der
         /// XML-Datei ausgelesen und in die Races-Collection gespeichert.
@@ -55,9 +56,9 @@ namespace Formula1.Core
         /// </summary>
         public static IEnumerable<Result> LoadResultsFromXmlIntoCollections()
         {
-            LoadRacesFromRacesXml();
-            Drivers = new List<Driver>();
-            Teams = new List<Team>();
+            Races = LoadRacesFromRacesXml();
+            Drivers = new Dictionary<string, Driver>();
+            Teams = new Dictionary<string, Team>();
             Results = new List<Result>();
             string filePath = MyFile.GetFullNameInApplicationTree("Results.xml");
             var xElement = XDocument.Load(filePath).Root;
@@ -67,13 +68,43 @@ namespace Formula1.Core
                 Results = xElement.Elements("Race").Elements("ResultsList").Elements("Result")
                            .Select(result => new Result
                            {
-
+                               Race = GetRace(result),
+                               Driver = GetDriver(result),
+                               Team = GetTeams(result),
+                               Position = (int)result.Attribute("position"),
+                               Points = (int)result.Attribute("points")
                            })
                            .ToList();
             }
             return Results;
         }
 
+        private static Team GetTeams(XElement result)
+        {
+            string teamName = result.Element("Constructor")?.Element("Name")?.Value;
+            if (!Teams.ContainsKey(teamName))
+            {
+                Teams[teamName] = new Team(teamName);
+            }
+            return Teams[teamName];
+        }
 
+        private static Driver GetDriver(XElement result)
+        {
+            string givenName = result.Element("Driver")?.Element("GivenName")?.Value;
+            string familyName = result.Element("Driver")?.Element("FamilyName")?.Value;
+            string driverName = $"{familyName} {givenName}";
+            if (!Drivers.ContainsKey(driverName))
+            {
+                Drivers[driverName] = new Driver(driverName);
+            }
+            return Drivers[driverName];
+        }
+
+        private static Race GetRace(XElement result)
+        {
+            int raceNumber = (int)result.Parent?.Parent?.Attribute("round");
+            return Races.Single(race => race.Number == raceNumber);
+        }
     }
 }

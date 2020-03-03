@@ -6,12 +6,17 @@ namespace Formula1.Core.Entities
 {
     public class Team : ICompetitor
     {
-        public string Name { get; }
+        public string DriverName { get; }
         public string Nationality { get; set; }
+
+        public Team(string name)
+        {
+            DriverName = name;
+        }
 
         public override string ToString()
         {
-            return $"{nameof(Name)}: {Name}, {nameof(Nationality)}: {Nationality}";
+            return $"{nameof(DriverName)}: {DriverName}, {nameof(Nationality)}: {Nationality}";
         }
     }
 }
